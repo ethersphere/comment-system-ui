@@ -9,11 +9,10 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 export default defineConfig({
   build: {
     copyPublicDir: false,
+    minify: "terser",
     lib: {
       entry: [resolve(__dirname, "src/index.ts")],
       formats: ["es"],
-      name: "comment-system-ui",
-      fileName: (format) => `comment-system-ui.${format}.js`,
     },
     rollupOptions: {
       external: ["react", "react/jsx-runtime"],
