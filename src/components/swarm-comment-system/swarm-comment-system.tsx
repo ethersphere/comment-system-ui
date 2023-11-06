@@ -1,3 +1,7 @@
+import { Comment, readComments } from "@ethersphere/comment-system";
+import SwarmCommentList from "./swarm-comment-list/swarm-comment-list";
+import { useEffect, useState } from "react";
+
 /**
  * stamp - Postage stamp ID. If ommitted a first available stamp will be used.
  * identifier - Resource identifier. If not sepcified it's calculated from bzz path.
@@ -11,6 +15,28 @@ export interface SwarmCommentSystemProps {
   beeDebugApiUrl?: string;
 }
 
-export default function SwarmCommentSystem() {
-  return <div>comment system ui</div>;
+export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
+  const [comments, setComments] = useState<Comment[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const loadComments = async () => {
+    const comments = await readComments(props);
+
+    setComments(comments);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadComments();
+  }, []);
+
+  if (loading) {
+    return <div>Loading comments...</div>;
+  }
+
+  if (!comments) {
+    return <div>Couldn't load comments</div>;
+  }
+
+  return <SwarmCommentList comments={comments} />;
 }
