@@ -7,6 +7,7 @@ import {
 import SwarmCommentList from "./swarm-comment-list/swarm-comment-list";
 import { useEffect, useState } from "react";
 import SwarmCommentForm from "./swarm-comment-form/swarm-comment-form";
+import { Tabs } from "../tabs/tabs";
 
 /**
  * stamp - Postage stamp ID. If ommitted a first available stamp will be used.
@@ -19,18 +20,31 @@ export interface SwarmCommentSystemProps {
   identifier?: string;
   beeApiUrl?: string;
   beeDebugApiUrl?: string;
+  approvedFeed?: string;
 }
 
 export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
+  const { approvedFeed } = props;
   const [comments, setComments] = useState<Comment[] | null>(null);
+  const [category, setCategory] = useState<"all" | "approved">("approved");
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
 
   const loadComments = async () => {
-    const comments = await readComments(props);
+    try {
+      setLoading(true);
 
-    setComments(comments);
-    setLoading(false);
+      const comments = await readComments({
+        ...props,
+        approvedFeed: category === "approved" ? approvedFeed : undefined,
+      });
+
+      setComments(comments);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const sendComment = async (comment: CommentRequest) => {
@@ -53,7 +67,7 @@ export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
 
   useEffect(() => {
     loadComments();
-  }, []);
+  }, [category]);
 
   if (loading) {
     return <div>Loading comments...</div>;
@@ -66,7 +80,12 @@ export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
   return (
     <div>
       <SwarmCommentForm onSubmit={sendComment} loading={formLoading} />
-      <SwarmCommentList comments={comments} />
+      <Tabs
+        tabs={["Approved", "All"]}
+        onTabChange={(tab) => setCategory(tab === 0 ? "approved" : "all")}
+      >
+        <SwarmCommentList comments={comments} />
+      </Tabs>
     </div>
   );
 }
