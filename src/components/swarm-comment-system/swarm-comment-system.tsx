@@ -21,10 +21,16 @@ export interface SwarmCommentSystemProps {
   beeApiUrl?: string;
   beeDebugApiUrl?: string;
   approvedFeed?: string;
+  classes?: {
+    wrapper?: string;
+    form?: string;
+    tabs?: string;
+    comments?: string;
+  };
 }
 
-export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
-  const { approvedFeed } = props;
+export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
+  const { approvedFeed, classes } = props;
   const [comments, setComments] = useState<Comment[] | null>(null);
   const [category, setCategory] = useState<"all" | "approved">("approved");
   const [loading, setLoading] = useState(true);
@@ -78,13 +84,18 @@ export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
   }
 
   return (
-    <div>
-      <SwarmCommentForm onSubmit={sendComment} loading={formLoading} />
+    <div className={classes?.wrapper}>
+      <SwarmCommentForm
+        className={classes?.form}
+        onSubmit={sendComment}
+        loading={formLoading}
+      />
       <Tabs
+        className={classes?.tabs}
         tabs={["Approved", "All"]}
         onTabChange={(tab) => setCategory(tab === 0 ? "approved" : "all")}
       >
-        <SwarmCommentList comments={comments} />
+        <SwarmCommentList className={classes?.comments} comments={comments} />
       </Tabs>
     </div>
   );

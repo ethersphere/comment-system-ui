@@ -1,5 +1,5 @@
 {
-  "name": "comment-system-ui",
+  "name": "@ethersphere/comment-system-ui",
   "private": true,
   "version": "0.0.0",
   "type": "module",

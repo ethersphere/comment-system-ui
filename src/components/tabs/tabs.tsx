@@ -4,14 +4,17 @@ interface TabsProps {
   tabs: string[];
   children: React.ReactNode;
   onTabChange: (index: number) => void;
+  className?: string;
 }
 
-export function Tabs({ tabs, children, onTabChange }: TabsProps) {
+export function Tabs({ tabs, children, onTabChange, className }: TabsProps) {
   return (
     <>
-      <div className={styles["swarm-comment-tabs"]}>
+      <div className={`${styles["swarm-comment-tabs"]} ${className}`}>
         {tabs.map((tab, index) => (
-          <button onClick={() => onTabChange(index)}>{tab}</button>
+          <button key={tab} onClick={() => onTabChange(index)}>
+            {tab}
+          </button>
         ))}
       </div>
       <div>{children}</div>
