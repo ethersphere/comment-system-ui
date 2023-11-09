@@ -26,7 +26,7 @@ export interface SwarmCommentSystemProps {
 export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
   const { approvedFeed } = props;
   const [comments, setComments] = useState<Comment[] | null>(null);
-  const [category, setCategory] = useState<"all" | "approved">("approved");
+  const [category, setCategory] = useState<"all" | "approved">("all");
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
 
@@ -81,8 +81,9 @@ export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
     <div>
       <SwarmCommentForm onSubmit={sendComment} loading={formLoading} />
       <Tabs
-        tabs={["Approved", "All"]}
-        onTabChange={(tab) => setCategory(tab === 0 ? "approved" : "all")}
+        tabs={["All", "Author Selected"]}
+        disabled={[false, !approvedFeed]}
+        onTabChange={(tab) => setCategory(tab === 0 ? "all" : "approved")}
       >
         <SwarmCommentList comments={comments} />
       </Tabs>
