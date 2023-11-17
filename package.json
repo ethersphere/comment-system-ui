@@ -3,7 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "main": "dist/index.js",
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.es.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "dev": "vite",
@@ -15,7 +16,7 @@
   "files": [
     "dist"
   ],
-  "peerDependencies": {
+  "dependencies": {
     "@ethersphere/bee-js": "^6.4.1",
     "ethers": "^6.8.0",
     "react": "^18.2.0",

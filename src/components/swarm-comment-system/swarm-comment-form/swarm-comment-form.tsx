@@ -59,6 +59,7 @@ export default function SwarmCommentForm({
       className={`${styles["swarm-comment-form"]} ${className}`}
       onSubmit={submit}
     >
+      <h6>Add comment:</h6>
       <input
         className={errors.user && styles["field-error"]}
         onChange={() => setErrors({ ...errors, user: undefined })}
