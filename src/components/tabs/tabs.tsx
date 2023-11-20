@@ -17,7 +17,7 @@ export function Tabs({ tabs, children, onTabChange, className }: TabsProps) {
           </button>
         ))}
       </div>
-      <div>{children}</div>
+      <div className={styles["swarm-comment-tabs-content"]}>{children}</div>
     </>
   );
 }

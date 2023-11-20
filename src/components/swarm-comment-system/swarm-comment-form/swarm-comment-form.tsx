@@ -72,6 +72,7 @@ export default function SwarmCommentForm({
         className={errors.data && styles["field-error"]}
         onChange={() => setErrors({ ...errors, data: undefined })}
         name="data"
+        rows={5}
         disabled={loading}
       ></textarea>
       <button disabled={loading}>Submit</button>
