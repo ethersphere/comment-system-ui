@@ -20,7 +20,7 @@ export interface SwarmCommentSystemProps {
   identifier?: string;
   beeApiUrl?: string;
   beeDebugApiUrl?: string;
-  approvedFeed?: string;
+  approvedFeedAddress?: string;
   classes?: {
     wrapper?: string;
     form?: string;
@@ -30,7 +30,7 @@ export interface SwarmCommentSystemProps {
 }
 
 export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
-  const { approvedFeed, classes } = props;
+  const { approvedFeedAddress, classes } = props;
   const [comments, setComments] = useState<Comment[] | null>(null);
   const [category, setCategory] = useState<"all" | "approved">("approved");
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,8 @@ export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
 
       const comments = await readComments({
         ...props,
-        approvedFeed: category === "approved" ? approvedFeed : undefined,
+        approvedFeedAddress:
+          category === "approved" ? approvedFeedAddress : undefined,
       });
 
       setComments(comments);
