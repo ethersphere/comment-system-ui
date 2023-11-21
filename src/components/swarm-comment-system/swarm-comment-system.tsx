@@ -76,10 +76,6 @@ export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
     loadComments();
   }, [category]);
 
-  if (loading) {
-    return <div>Loading comments...</div>;
-  }
-
   if (!comments) {
     return <div>Couldn't load comments</div>;
   }
@@ -89,11 +85,13 @@ export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
       <SwarmCommentForm
         className={classes?.form}
         onSubmit={sendComment}
-        loading={formLoading}
+        loading={loading || formLoading}
       />
       <Tabs
+        activeTab={category === "approved" ? 0 : 1}
         className={classes?.tabs}
-        tabs={["Approved", "All"]}
+        disabled={loading}
+        tabs={approvedFeedAddress ? ["Approved", "All"] : ["All"]}
         onTabChange={(tab) => setCategory(tab === 0 ? "approved" : "all")}
       >
         <SwarmCommentList className={classes?.comments} comments={comments} />
