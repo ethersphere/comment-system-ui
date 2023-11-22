@@ -5,6 +5,7 @@ import { useState } from "react";
 export interface SwarmCommentFormProps {
   loading: boolean;
   onSubmit: (comment: CommentRequest) => void;
+  className?: string;
 }
 
 interface FormElements extends HTMLFormControlsCollection {
@@ -23,6 +24,7 @@ interface FormErrors {
 export default function SwarmCommentForm({
   loading,
   onSubmit,
+  className,
 }: SwarmCommentFormProps) {
   const [errors, setErrors] = useState<FormErrors>({});
 
@@ -53,7 +55,11 @@ export default function SwarmCommentForm({
   };
 
   return (
-    <form className={styles["swarm-comment-form"]} onSubmit={submit}>
+    <form
+      className={`${styles["swarm-comment-form"]} ${className}`}
+      onSubmit={submit}
+    >
+      <h6>Add comment:</h6>
       <input
         className={errors.user && styles["field-error"]}
         onChange={() => setErrors({ ...errors, user: undefined })}
@@ -66,6 +72,7 @@ export default function SwarmCommentForm({
         className={errors.data && styles["field-error"]}
         onChange={() => setErrors({ ...errors, data: undefined })}
         name="data"
+        rows={5}
         disabled={loading}
       ></textarea>
       <button disabled={loading}>Submit</button>

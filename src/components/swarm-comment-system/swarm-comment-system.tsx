@@ -20,11 +20,17 @@ export interface SwarmCommentSystemProps {
   identifier?: string;
   beeApiUrl?: string;
   beeDebugApiUrl?: string;
-  approvedFeed?: string;
+  approvedFeedAddress?: string;
+  classes?: {
+    wrapper?: string;
+    form?: string;
+    tabs?: string;
+    comments?: string;
+  };
 }
 
-export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
-  const { approvedFeed } = props;
+export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
+  const { approvedFeedAddress, classes } = props;
   const [comments, setComments] = useState<Comment[] | null>(null);
   const [category, setCategory] = useState<"all" | "approved">("all");
   const [loading, setLoading] = useState(true);
@@ -36,7 +42,8 @@ export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
 
       const comments = await readComments({
         ...props,
-        approvedFeed: category === "approved" ? approvedFeed : undefined,
+        approvedFeedAddress:
+          category === "approved" ? approvedFeedAddress : undefined,
       });
 
       setComments(comments);
@@ -69,23 +76,25 @@ export default function SwarmCommentSystem(props: SwarmCommentSystemProps) {
     loadComments();
   }, [category]);
 
-  if (loading) {
-    return <div>Loading comments...</div>;
-  }
-
   if (!comments) {
     return <div>Couldn't load comments</div>;
   }
 
   return (
-    <div>
-      <SwarmCommentForm onSubmit={sendComment} loading={formLoading} />
+    <div className={classes?.wrapper}>
+      <SwarmCommentForm
+        className={classes?.form}
+        onSubmit={sendComment}
+        loading={loading || formLoading}
+      />
       <Tabs
-        tabs={["All", "Author Selected"]}
-        disabled={[false, !approvedFeed]}
-        onTabChange={(tab) => setCategory(tab === 0 ? "all" : "approved")}
+        activeTab={category === "approved" ? 0 : 1}
+        className={classes?.tabs}
+        disabled={[loading, loading]}
+        tabs={approvedFeedAddress ? ["Author Selected", "All"] : ["All"]}
+        onTabChange={(tab) => setCategory(tab === 0 ? "approved" : "all")}
       >
-        <SwarmCommentList comments={comments} />
+        <SwarmCommentList className={classes?.comments} comments={comments} />
       </Tabs>
     </div>
   );

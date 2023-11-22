@@ -1,7 +1,7 @@
 import { defineConfig } from "vite";
 import { resolve } from "path";
 import react from "@vitejs/plugin-react";
-import { libInjectCss } from "vite-plugin-lib-inject-css";
+// import { libInjectCss } from "vite-plugin-lib-inject-css";
 import dts from "vite-plugin-dts";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
@@ -9,18 +9,20 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 export default defineConfig({
   build: {
     copyPublicDir: false,
-    minify: "terser",
+    minify: true,
     lib: {
       entry: [resolve(__dirname, "src/index.ts")],
-      formats: ["es"],
+      formats: ["es", "umd"],
+      name: 'SwarmCommentSystem',
+      fileName: (format) => `index.${format}.js`
     },
-    rollupOptions: {
-      external: ["react", "react/jsx-runtime"],
-    },
+    // rollupOptions: {
+    //   external: ["react", "react/jsx-runtime"],
+    // },
   },
   plugins: [
     react(),
-    libInjectCss(),
+    // libInjectCss(),
     dts({
       exclude: [
         resolve(__dirname, "src/main.tsx"),
