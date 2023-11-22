@@ -5,7 +5,7 @@ interface TabsProps {
   activeTab: number;
   children: React.ReactNode;
   onTabChange: (index: number) => void;
-  disabled?: boolean;
+  disabled?: boolean[];
   className?: string;
 }
 
@@ -24,7 +24,8 @@ export function Tabs({
           <button
             className={index === activeTab ? styles["active"] : ""}
             key={tab}
-            onClick={() => !disabled && onTabChange(index)}
+            disabled={disabled && disabled[index]}
+            onClick={() => onTabChange(index)}
           >
             {tab}
           </button>

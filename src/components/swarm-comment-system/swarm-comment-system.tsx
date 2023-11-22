@@ -32,7 +32,7 @@ export interface SwarmCommentSystemProps {
 export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
   const { approvedFeedAddress, classes } = props;
   const [comments, setComments] = useState<Comment[] | null>(null);
-  const [category, setCategory] = useState<"all" | "approved">("approved");
+  const [category, setCategory] = useState<"all" | "approved">("all");
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
 
@@ -90,8 +90,8 @@ export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
       <Tabs
         activeTab={category === "approved" ? 0 : 1}
         className={classes?.tabs}
-        disabled={loading}
-        tabs={approvedFeedAddress ? ["Approved", "All"] : ["All"]}
+        disabled={[loading, loading]}
+        tabs={approvedFeedAddress ? ["Author Selected", "All"] : ["All"]}
         onTabChange={(tab) => setCategory(tab === 0 ? "approved" : "all")}
       >
         <SwarmCommentList className={classes?.comments} comments={comments} />
