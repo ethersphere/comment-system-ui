@@ -1,7 +1,8 @@
 import {
   Comment,
+  CommentNode,
   CommentRequest,
-  readComments,
+  readCommentsAsTree,
   writeComment,
 } from "@ethersphere/comment-system";
 import SwarmCommentList from "./swarm-comment-list/swarm-comment-list";
@@ -31,16 +32,19 @@ export interface SwarmCommentSystemProps {
 
 export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
   const { approvedFeedAddress, classes } = props;
-  const [comments, setComments] = useState<Comment[] | null>(null);
-  const [category, setCategory] = useState<"all" | "approved">("all");
+  const [comments, setComments] = useState<CommentNode[] | null>(null);
+  const [category, setCategory] = useState<"all" | "approved">("approved");
   const [loading, setLoading] = useState(true);
   const [formLoading, setFormLoading] = useState(false);
+  const [replyingComments, setReplyingComments] = useState<
+    Comment[] | undefined
+  >();
 
   const loadComments = async () => {
     try {
       setLoading(true);
 
-      const comments = await readComments({
+      const comments = await readCommentsAsTree({
         ...props,
         approvedFeedAddress:
           category === "approved" ? approvedFeedAddress : undefined,
@@ -58,12 +62,36 @@ export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
     try {
       setFormLoading(true);
 
-      await writeComment(comment, props);
+      if (replyingComments) {
+        comment.replyId = replyingComments[0].id;
+      }
 
-      setComments([
-        ...(comments as Comment[]),
-        { ...comment, timestamp: new Date().getTime() },
-      ]);
+      const addedComment = await writeComment(comment, props);
+
+      const updatedComments = [...(comments as CommentNode[])];
+      let currentCommentList = updatedComments;
+
+      if (replyingComments) {
+        replyingComments?.reverse().forEach(({ id }) => {
+          const index = currentCommentList.findIndex(
+            ({ comment }) => comment.id === id
+          );
+
+          if (index < 0) {
+            return;
+          }
+          const parentNode = currentCommentList[index];
+
+          currentCommentList[index] = { ...parentNode };
+
+          currentCommentList = parentNode.replies;
+        });
+      }
+
+      currentCommentList.push({ comment: addedComment, replies: [] });
+
+      setComments(updatedComments);
+      setReplyingComments(undefined);
     } catch (error) {
       // TODO the error should be displayed on page
       alert(error);
@@ -85,6 +113,8 @@ export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
       <SwarmCommentForm
         className={classes?.form}
         onSubmit={sendComment}
+        replyingComment={replyingComments ? replyingComments[0] : undefined}
+        onReplyCancel={() => setReplyingComments(undefined)}
         loading={loading || formLoading}
       />
       <Tabs
@@ -94,7 +124,13 @@ export function SwarmCommentSystem(props: SwarmCommentSystemProps) {
         tabs={approvedFeedAddress ? ["Author Selected", "All"] : ["All"]}
         onTabChange={(tab) => setCategory(tab === 0 ? "approved" : "all")}
       >
-        <SwarmCommentList className={classes?.comments} comments={comments} />
+        <SwarmCommentList
+          className={classes?.comments}
+          onReply={setReplyingComments}
+          comments={comments}
+          replyLevel={0}
+          maxReplyLevel={3}
+        />
       </Tabs>
     </div>
   );
