@@ -1,2 +1,11 @@
 .swarm-comment-list {
+  text-align: left;
+
+  .comment {
+    cursor: pointer;
+  }
+
+  .replies {
+    padding-left: 30px;
+  }
 }

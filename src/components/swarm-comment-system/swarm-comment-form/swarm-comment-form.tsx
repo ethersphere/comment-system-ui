@@ -1,10 +1,12 @@
-import { CommentRequest } from "@ethersphere/comment-system";
+import { Comment, CommentRequest } from "@ethersphere/comment-system";
 import styles from "./swarm-comment-form.module.scss";
 import { useState } from "react";
 
 export interface SwarmCommentFormProps {
   loading: boolean;
   onSubmit: (comment: CommentRequest) => void;
+  replyingComment?: Comment;
+  onReplyCancel?: () => void;
   className?: string;
 }
 
@@ -24,6 +26,8 @@ interface FormErrors {
 export default function SwarmCommentForm({
   loading,
   onSubmit,
+  replyingComment,
+  onReplyCancel,
   className,
 }: SwarmCommentFormProps) {
   const [errors, setErrors] = useState<FormErrors>({});
@@ -52,6 +56,9 @@ export default function SwarmCommentForm({
     }
 
     onSubmit({ user, data });
+
+    elements.user.value = "";
+    elements.data.value = "";
   };
 
   return (
@@ -60,6 +67,14 @@ export default function SwarmCommentForm({
       onSubmit={submit}
     >
       <h6>Add comment:</h6>
+      {replyingComment && (
+        <>
+          <p>Reply: {replyingComment.data}</p>
+          <button className={styles["reply-cancel"]} onClick={onReplyCancel}>
+            Cancel
+          </button>
+        </>
+      )}
       <input
         className={errors.user && styles["field-error"]}
         onChange={() => setErrors({ ...errors, user: undefined })}
